@@ -16,7 +16,7 @@ $route= Route::currentRouteName()
     <div class="row">
         <div class="col-md-4">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body">*
                     <div class="form-group">
                         <label>Label</label>
                         <input type="text" class="form-control" id="group" name="label" value="{{ @$group->label}}">
