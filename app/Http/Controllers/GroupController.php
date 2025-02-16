@@ -10,10 +10,8 @@ class GroupController extends Controller
 
     public function index()
     {
-        
         $groups =Group::all();
-
-       return view('groups/index', compact('groups'));
+        return view('groups/index', compact('groups'));
     }
 
     public function create(Request $request)
@@ -26,36 +24,37 @@ class GroupController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
-            'label'=>'required'
-        ];
-        $this->validate($request,$rules);
-        try
-        {
-            $data = [
-                'label'=>$request->label,
-            ];
-            $group = Group::create($data);
-            if($group)
+        $validated = $request->validate([
+            'name' => 'required',
+        ]);
+        if($validatedData)
+        {  
+            try
             {
-                return response()->json([
-                    'status'=>1,
-                    'msg'=>'Group Succesfully added'
-                ]);
+                $data = [
+                    'label'=>$request->label,
+                ];
+                $group = Group::create($data);
+                if($group)
+                {
+                    return response([
+                        'status'=>1,
+                        'massege'=>'Group Succesfully Added'
+                    ]);
+                }
+            } 
+            catch(Exception $e){
+                return redirect()->back()->withFailed('Exception:' . $e->getMessage());
             }
         }
-        catch(Exception $e){
-            return redirect()->back()->withFailed('Exception:' . $e->getMessage());
-        }
+        
     }
 
     public function edit($id)
     {
         if($id)
         {
-            $group = Group::whereId($id)->first();
-            //dd($group);
-
+            $group = Group::where('id',$id)->first();
             if($group)
             {
                 return view('groups.form', compact('group'));
@@ -79,15 +78,11 @@ class GroupController extends Controller
 
                 if($group->save())
                 {
-                    return response()->json([
-                        'status'=>1,
-                        'msg'=>'Group Succesfully Updated'
-                    ]);
+                    return response(['status' => true, 'message' => 'Group Updated Successfully', 200]);
                 }
-                return redirect()->back()->withFailed('Group Not Updated');
+                return response(['status' => false, 'message'=>'Group Not Updated']);
             }
-            return redirect()->back()->withFailed('Group Not Found');
-
+            return response(['status' => false, 'message'=>'Group Not Updated']);
         }
         catch(Exception $e){
             return redirect()->back()->withFailed('Exception:' . $e->getMessage());
